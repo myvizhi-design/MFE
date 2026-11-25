@@ -1,5 +1,14 @@
-/* Only loaded when the remote runs on its own: adds the reset the shell normally provides. */
+/* Only loaded when the remote runs on its own (bootstrap.tsx, never through federation):
+   adds the reset and the unscoped utilities the shell normally provides, so the
+   StandaloneHost login page and toolbar (outside [data-mfe]) are styled. */
 @layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "@mfe/config/theme.css";
+
+@layer utilities {
+  @tailwind utilities;
+}
+
 @source "../../../packages/auth/src";
+@source "../../../packages/ui/src";
