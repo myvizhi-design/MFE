@@ -88,7 +88,7 @@ export function DashboardPage() {
           <p className="mt-4 text-xs text-slate-500">
             Roles come from <code className="rounded bg-slate-100 px-1">GET /auth/me</code>. The shell hides menu
             items and blocks routes; each module also checks roles before showing actions.
-            This is the test data
+            This is the test data. Dashboard testing.
           </p>
         </Card>
       )}
