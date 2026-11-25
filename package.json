@@ -1,0 +1,24 @@
+{
+  "name": "mfe-admin",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n shell,users,dashboard -c blue,green,magenta \"npm run dev -w @mfe/shell\" \"npm run dev -w @mfe/users\" \"npm run dev -w @mfe/dashboard\"",
+    "build": "npm run build -w @mfe/users -w @mfe/dashboard -w @mfe/shell",
+    "preview": "concurrently -k -n shell,users,dashboard -c blue,green,magenta \"npm run preview -w @mfe/shell\" \"npm run preview -w @mfe/users\" \"npm run preview -w @mfe/dashboard\"",
+    "start": "npm run build && npm run preview",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

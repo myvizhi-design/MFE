@@ -1,0 +1,13 @@
+{
+  "name": "@mfe/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Types shared between shell and remotes: user, roles, module manifest, remote app props.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0"
+  }
+}

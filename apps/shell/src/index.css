@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@import "@mfe/config/theme.css";
+
+/* Shared packages live outside this app's folder: tell Tailwind to scan them. */
+@source "../../../packages/ui/src";
+@source "../../../packages/auth/src";
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@mfe/ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared Tailwind UI kit. Bundled into each app (not a federation singleton).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@mfe/contracts": "*"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0"
+  }
+}

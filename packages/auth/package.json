@@ -1,0 +1,22 @@
+{
+  "name": "@mfe/auth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Auth session, guarded API client and route guards. Shared as a Module Federation SINGLETON so the shell and every remote see one session.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^7.0.8",
+    "@mfe/contracts": "*",
+    "@mfe/ui": "*",
+    "axios": "^1.21.1",
+    "react-hook-form": "^7.92.0",
+    "zod": "^4.6.7"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0",
+    "react-router": "^8.5.0"
+  }
+}

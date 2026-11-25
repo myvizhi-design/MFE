@@ -1,0 +1,12 @@
+[
+  {
+    "name": "dashboard",
+    "entry": "http://localhost:3002/remoteEntry.js",
+    "basePath": "/dashboard"
+  },
+  {
+    "name": "users",
+    "entry": "http://localhost:3001/remoteEntry.js",
+    "basePath": "/users"
+  }
+]

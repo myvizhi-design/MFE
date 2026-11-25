@@ -1,0 +1,35 @@
+{
+  "name": "@mfe/users",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remote: user management (list, search, detail, create/edit with validation, delete). Reference module to copy.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^7.0.8",
+    "@mfe/auth": "*",
+    "@mfe/contracts": "*",
+    "@mfe/ui": "*",
+    "@tanstack/react-query": "^5.108.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-hook-form": "^7.92.0",
+    "react-router": "^8.5.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@mfe/config": "*",
+    "@module-federation/vite": "^1.24.1",
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.8"
+  }
+}

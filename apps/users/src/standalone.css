@@ -1,0 +1,5 @@
+/* Only loaded when the remote runs on its own: adds the reset the shell normally provides. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/preflight.css" layer(base);
+@import "@mfe/config/theme.css";
+@source "../../../packages/auth/src";

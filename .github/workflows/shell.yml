@@ -1,0 +1,84 @@
+# Pipeline: SHELL (host)
+# Runs only when apps/shell or shared code changes.
+#   pull_request → CI (typecheck + build)
+#   push to main → CI → deploy to Vercel project "myvizhi-mfe-shell"
+name: shell
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/shell/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/shell.yml'
+  pull_request:
+    paths:
+      - 'apps/shell/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/shell.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shell-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck -w @mfe/shell
+      - name: Validate local registry
+        run: node -e "const r=require('./apps/shell/public/mfe.registry.json'); if(!Array.isArray(r)||!r.every(x=>x.name&&x.entry&&x.basePath)) throw new Error('invalid registry'); console.log('registry ok')"
+      - run: npm run build -w @mfe/shell
+
+  deploy:
+    needs: ci
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SHELL }}
+      USERS_URL: ${{ vars.USERS_URL || 'https://myvizhi-mfe-users.vercel.app' }}
+      DASHBOARD_URL: ${{ vars.DASHBOARD_URL || 'https://myvizhi-mfe-dashboard.vercel.app' }}
+    steps:
+      - name: Vercel secrets present?
+        if: env.VERCEL_TOKEN == '' || env.VERCEL_PROJECT_ID == ''
+        run: echo "::warning::Vercel secrets not set, deploy skipped. See README → Deploy to Vercel."
+      - uses: actions/checkout@v4
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+      - uses: actions/setup-node@v4
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+        with:
+          node-version: 22
+          cache: npm
+      - name: Deploy
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+        run: |
+          npm i -g vercel@latest
+          # Production registry: where the shell finds each remote at runtime.
+          cat > apps/shell/public/mfe.registry.prod.json <<EOF
+          [
+            { "name": "dashboard", "entry": "${DASHBOARD_URL%/}/remoteEntry.js", "basePath": "/dashboard" },
+            { "name": "users", "entry": "${USERS_URL%/}/remoteEntry.js", "basePath": "/users" }
+          ]
+          EOF
+          echo "VITE_MFE_REGISTRY_URL=/mfe.registry.prod.json" > apps/shell/.env.production.local
+          cat apps/shell/public/mfe.registry.prod.json
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

@@ -1,0 +1,74 @@
+# Pipeline: DASHBOARD remote
+# Runs only when apps/dashboard or shared code changes.
+#   pull_request → CI (typecheck + build)
+#   push to main → CI → deploy to Vercel project "myvizhi-mfe-dashboard"
+name: dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/dashboard/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/dashboard.yml'
+  pull_request:
+    paths:
+      - 'apps/dashboard/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/dashboard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dashboard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck -w @mfe/dashboard
+      - run: npm run build -w @mfe/dashboard
+
+  deploy:
+    needs: ci
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DASHBOARD }}
+      PUBLIC_URL: ${{ vars.DASHBOARD_URL || 'https://myvizhi-mfe-dashboard.vercel.app' }}
+    steps:
+      - name: Vercel secrets present?
+        if: env.VERCEL_TOKEN == '' || env.VERCEL_PROJECT_ID == ''
+        run: echo "::warning::Vercel secrets not set, deploy skipped. See README → Deploy to Vercel."
+      - uses: actions/checkout@v4
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+      - uses: actions/setup-node@v4
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+        with:
+          node-version: 22
+          cache: npm
+      - name: Deploy
+        if: env.VERCEL_TOKEN != '' && env.VERCEL_PROJECT_ID != ''
+        run: |
+          npm i -g vercel@latest
+          # Absolute URL the remote's chunks are served from (read by vite.config.ts).
+          echo "VITE_PUBLIC_URL=${PUBLIC_URL%/}/" > apps/dashboard/.env.production.local
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
