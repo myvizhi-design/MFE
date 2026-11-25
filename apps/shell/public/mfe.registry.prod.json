@@ -1,0 +1,12 @@
+[
+  {
+    "name": "dashboard",
+    "entry": "https://myvizhi-mfe-dashboard.vercel.app/remoteEntry.js",
+    "basePath": "/dashboard"
+  },
+  {
+    "name": "users",
+    "entry": "https://myvizhi-mfe-users.vercel.app/remoteEntry.js",
+    "basePath": "/users"
+  }
+]
