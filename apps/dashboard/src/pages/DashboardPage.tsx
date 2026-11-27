@@ -90,6 +90,7 @@ export function DashboardPage() {
             items and blocks routes; each module also checks roles before showing actions.
             This is the test data. Dashboard testing.
           </p>
+          <p>Tst the dashboard data</p>
         </Card>
       )}
     </div>
